@@ -34,7 +34,8 @@ export const convertFile = async (data: ConvertFile) => {
   // If file is HEIC, first process the file through `heic-decode`
   // and then let ImageMagick take care of the rest
   if(originalFileType.map(e => e.mime).includes("image/heif")) {
-    const heif = await heicDecode({ buffer: data.content.buffer });
+    // @ts-ignore
+    const heif = await heicDecode({ buffer: data.content });
     const heifData = new Uint8Array(heif.data);
 
     const settings = new MagickReadSettings({
