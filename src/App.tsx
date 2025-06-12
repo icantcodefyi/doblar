@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import cn from "classnames";
 import { useWindowSize } from "react-use";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { HelmetProvider, Helmet } from "react-helmet-async";
 import { DragDropFile } from "$/components/DragDropFile";
 import { uuid4 } from "./utils/uuid";
 import {
@@ -106,8 +107,23 @@ const AppContent = () => {
 
 export const App = () => {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="doblar-ui-theme">
-      <AppContent />
-    </ThemeProvider>
+    <HelmetProvider>
+      <ThemeProvider defaultTheme="system" storageKey="doblar-ui-theme">
+        <Helmet>
+          <meta property="og:title" content="Doblar" />
+          <meta property="og:description" content="Doblar is not an ordinary image converter. All the conversion happens right in your browser." />
+          <meta property="og:image" content="https://i.ibb.co/TMkjjjqv/f4a5f90f-fe93-4060-8333-809c2796717c.png" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://doblar.ani.ink" />
+          <meta name="twitter:card" content="Doblar" />
+          <meta name="twitter:title" content="Doblar" />
+          <meta name="twitter:description" content="Doblar is not an ordinary image converter. All the conversion happens right in your browser." />
+          <meta name="twitter:image" content="https://i.ibb.co/TMkjjjqv/f4a5f90f-fe93-4060-8333-809c2796717c.png" />
+        </Helmet>
+        <AppContent />
+      </ThemeProvider>
+    </HelmetProvider>
   );
 };
