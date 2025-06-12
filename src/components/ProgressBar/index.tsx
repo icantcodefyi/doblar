@@ -1,6 +1,5 @@
 import React from "react";
-import cn from "classnames";
-import styles from "./ProgressBar.module.css";
+import { Progress } from "@/components/ui/progress";
 
 export interface ProgressBarProps {
   minValue?: number;
@@ -25,29 +24,35 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     determinate = true;
   }
   
+  if (determinate) {
+    const progressValue = (value! / maxValue) * 100;
+    return (
+      <Progress 
+        value={progressValue} 
+        className="w-full h-2.5" 
+        aria-valuenow={value}
+        aria-valuemin={minValue}
+        aria-valuemax={maxValue}
+      />
+    );
+  }
+
+  // Indeterminate progress bar
   return (
     <div
-      className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 relative overflow-hidden"
+      className="w-full bg-secondary rounded-full h-2.5 relative overflow-hidden"
       role="progressbar"
       aria-valuenow={value}
       aria-valuemin={minValue}
       aria-valuemax={maxValue}
     >
-      {determinate && (
-        <div
-          className={cn(
-            "h-2.5 rounded-full",
-            value! >= maxValue ? "bg-green-600" : "bg-blue-600",
-          )}
-          style={{width: `${(value!/maxValue) * 100}%`}}
-        />
-      )}
-
-      {!determinate && (
-        <div
-          className={cn("h-2.5 rounded-full bg-blue-600 absolute left-[-50%] w-[35%]", styles.indeterminate_progressbar)}
-        />
-      )}
+      <div
+        className="h-2.5 rounded-full bg-primary absolute w-[35%] animate-pulse"
+        style={{
+          animation: "slide 2s ease-in-out infinite",
+          left: "-50%"
+        }}
+      />
     </div>
   );
 };

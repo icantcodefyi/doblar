@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    "baseUrl": ".",
     "paths": {
-      "$/*": ["./src/*"]
+      "$/*": ["./src/*"],
+      "@/*": ["./src/*"]
     },
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext", "WebWorker"],

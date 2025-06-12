@@ -1,38 +1,45 @@
 import React from "react";
 import { IoSync, IoClose, IoDownloadOutline, IoReload } from "react-icons/io5";
-import ReactSelect from "react-select";
-import { Toolbar, ToolbarButton, ToolbarAnchor } from "$/components/Toolbar";
+import { 
+  Select as ShadcnSelect, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import { useAtom } from "jotai";
 import cn from "classnames";
 import { useWorkerRefContext } from "$/imagemagick-worker";
 import { LoadingIcon } from "$/components/LoadingIcon";
-import { FileStatus, imageFileTypes } from "$/constants";
+import { FileStatus, imageFileTypes, type ImageFileTypes } from "$/constants";
 import type { PrimitiveAtom } from "jotai";
 import { convertFile } from "$/utils/convertFile";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const statusBoxRendering: {
   [key in FileStatus["status"]]: {
-    className: string;
+    variant: "default" | "secondary" | "destructive" | "outline";
     displayName: string;
     icon?: React.ReactNode;
   };
 } = {
   "in-progress": {
     displayName: "Converting",
-    className: "bg-orange-400",
+    variant: "secondary",
     icon: <LoadingIcon />,
   },
   "not-started": {
     displayName: "Ready",
-    className: "border-2 !text-black border-green-300 bg-green-100",
+    variant: "outline",
   },
   failed: {
     displayName: "Failed",
-    className: "bg-red-400",
+    variant: "destructive",
   },
   success: {
     displayName: "Finished",
-    className: "bg-green-400",
+    variant: "default",
   },
 };
 
@@ -48,57 +55,61 @@ export const FileName: React.FC<State> = ({ fileAtom }) => {
   const [file, setFile] = useAtom(fileAtom)
 
   return (
-  <p
-    className="text-lg whitespace-nowrap overflow-x-auto scrollbar"
-    style={{ scrollbarWidth: "thin" }}
-  >
-    {file.file.name}
-  </p>
-)};
+    <p className="text-sm font-medium text-foreground truncate max-w-full" title={file.file.name}>
+      {file.file.name}
+    </p>
+  );
+};
 
 export const Select: React.FC<State> = ({ fileAtom }) => {
   const [file, setFile] = useAtom(fileAtom)
 
   return (
-  <ReactSelect
-    className="w-full"
-    menuPortalTarget={document.body}
-    isDisabled={file.status === "in-progress" || file.status === "success"}
-    onChange={(e) => setFile({...file, "convertTo": e?.value})}
-    options={imageFileTypes.map((v) => ({
-      value: v,
-      label: v,
-    }))}
-  />
-)};
+    <ShadcnSelect
+      disabled={file.status === "in-progress" || file.status === "success"}
+      onValueChange={(value: string) => setFile({...file, "convertTo": value as ImageFileTypes})}
+      value={file.convertTo || ""}
+    >
+      <SelectTrigger className="w-full h-8 text-sm">
+        <SelectValue placeholder="Select format..." />
+      </SelectTrigger>
+      <SelectContent>
+        {imageFileTypes.map((format) => (
+          <SelectItem key={format} value={format}>
+            {format.toUpperCase()}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </ShadcnSelect>
+  );
+};
 
 export const StatusTag: React.FC<State> = ({ fileAtom }) => {
   const [file, setFile] = useAtom(fileAtom)
 
   return (
-  <span
-    title={file.statusTooltip}
-    className={cn(
-      "inline-flex items-center px-2 rounded py-1 text-white uppercase text-sm ",
-      statusBoxRendering[file.status].className
-    )}
-  >
-    {statusBoxRendering[file.status].icon}
-    {statusBoxRendering[file.status].displayName}
-  </span>
-)};
+    <Badge 
+      variant={statusBoxRendering[file.status].variant}
+      className="inline-flex items-center gap-1 text-xs"
+      title={file.statusTooltip}
+    >
+      {statusBoxRendering[file.status].icon}
+      {statusBoxRendering[file.status].displayName}
+    </Badge>
+  );
+};
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ fileAtom, removeFileToConvertAtom }) => {
   const ref = useWorkerRefContext();
   const [file, setFile] = useAtom(fileAtom);
 
-  const deleteElement = (arr: any[], index: number) => arr.filter(s => s.length <= index);
-
   return (
-    <Toolbar className="flex space-x-2">
+    <div className="flex items-center gap-1">
       {/* Convert button */}
       {file.status === "not-started" && (
-        <ToolbarButton
+        <Button
+          size="sm"
+          variant="default"
           title="Convert this file"
           aria-label="Convert this file"
           disabled={!(file.convertTo && ref?.current)}
@@ -106,38 +117,38 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ fileAtom, removeFi
             setFile({ ...file, status: "in-progress" })     
             convertFile(file, ref!.current!).then((newFile) => setFile(newFile));
           }}
-          className={cn(
-            "p-2 rounded text-white",
-            "bg-blue-500 not-disabled:hover:shadow-md duration-150 not-disabled:active:bg-blue-600",
-            "disabled:opacity-40 disabled:cursor-not-allowed"
-          )}
+          className="h-8 w-8 p-0"
         >
-          <IoSync className="inline" />
-        </ToolbarButton>
+          <IoSync size={14} />
+        </Button>
       )}
 
       {/* Download button */}
       {file.status === "success" && (
-        <ToolbarAnchor
-          title="Download this file"
-          aria-label="Download this file"
-          href={file.successData?.url}
-          download={file.file.name
-            .replace(/\.[^/.]+$/, "")
-            .concat(".", file.convertTo as string)}
-          className={cn(
-            "p-2 rounded text-white",
-            "bg-green-500 not-disabled:hover:shadow-md duration-150 not-disabled:active:bg-green-600",
-            "disabled:opacity-40 disabled:cursor-not-allowed"
-          )}
+        <Button
+          size="sm"
+          variant="default"
+          asChild
+          className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
         >
-          <IoDownloadOutline className="inline" />
-        </ToolbarAnchor>
+          <a
+            title="Download this file"
+            aria-label="Download this file"
+            href={file.successData?.url}
+            download={file.file.name
+              .replace(/\.[^/.]+$/, "")
+              .concat(".", file.convertTo as string)}
+          >
+            <IoDownloadOutline size={14} />
+          </a>
+        </Button>
       )}
 
       {/* Retry Button */}
       {file.status === "failed" && (
-        <ToolbarButton
+        <Button
+          size="sm"
+          variant="default"
           title="Retry conversion"
           aria-label="Retry conversion"
           disabled={!ref?.current}
@@ -145,28 +156,22 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ fileAtom, removeFi
             setFile({ ...file, status: "in-progress" })      
             convertFile(file, ref!.current!).then((newFile) => setFile(newFile))
           }}
-          className={cn(
-            "p-2 rounded text-white",
-            "bg-orange-500 not-disabled:hover:shadow-md duration-150 not-disabled:active:bg-orange-600",
-            "disabled:opacity-40 disabled:cursor-not-allowed"
-          )}
+          className="h-8 w-8 p-0 bg-orange-600 hover:bg-orange-700 dark:bg-orange-700 dark:hover:bg-orange-800"
         >
-          <IoReload className="inline" />
-        </ToolbarButton>
+          <IoReload size={14} />
+        </Button>
       )}
 
-      <ToolbarButton
+      <Button
+        size="sm"
+        variant="destructive"
         title="Remove this file"
         aria-label="Remove this file"
         onClick={() => removeFileToConvertAtom(fileAtom)}
-        className={cn(
-          "p-2 rounded text-white",
-          "bg-red-500 not-disabled:hover:shadow-md duration-150 not-disabled:active:bg-red-600",
-          "disabled:opacity-40 disabled:cursor-not-allowed"
-        )}
+        className="h-8 w-8 p-0"
       >
-        <IoClose className="inline" />
-      </ToolbarButton>
-    </Toolbar>
+        <IoClose size={14} />
+      </Button>
+    </div>
   );
 };

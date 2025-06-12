@@ -3,6 +3,8 @@ import { useRegisterSW } from "virtual:pwa-register/react";
 import { Transition } from "@headlessui/react";
 import { IoCheckmarkCircle, IoClose } from "react-icons/io5";
 import sparkles from "$/assets/svg/sparkles.svg";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 export const ReloadPrompt: React.FC = () => {
   const [display, setDisplay] = useState(false);
@@ -26,7 +28,6 @@ export const ReloadPrompt: React.FC = () => {
     },
   });
 
-
   return (
     <Transition
       show={display}
@@ -34,44 +35,48 @@ export const ReloadPrompt: React.FC = () => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="toast">
-        <div className="flex">
-          <div className="flex flex-grow items-center space-x-1 p-3">
-            <span className="text-2xl">
-              {offlineReady && <IoCheckmarkCircle className="text-green-600" />}
+      <Alert className="bg-card/95 backdrop-blur-sm border shadow-lg">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0">
+              {offlineReady && <IoCheckmarkCircle className="text-green-500 w-5 h-5" />}
               {needRefresh && (
                 <img
-                  className="select-none pointer-events-none"
-                  width={24}
+                  className="select-none pointer-events-none w-5 h-5"
                   src={sparkles}
+                  alt="Update available"
                 />
               )}
-            </span>
-            <span className="text-base">
+            </div>
+            <AlertDescription className="text-sm font-medium text-foreground">
               {offlineReady && "Doblar is ready to work offline!"}
               {needRefresh && "A new update is ready!"}
-            </span>
-            <div className="flex-grow"></div>
+            </AlertDescription>
+          </div>
+          
+          <div className="flex items-center gap-2">
             {needRefresh && (
-              <button
-                className="font-semibold focus:underline text-blue-600 active:text-blue-800"
+              <Button
+                size="sm"
                 onClick={() => updateServiceWorker(true)}
+                className="h-8 text-xs"
               >
                 Update
-              </button>
+              </Button>
+            )}
+            {needRefresh && (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setDisplay(false)}
+                className="h-8 w-8 p-0"
+              >
+                <IoClose size={16} />
+              </Button>
             )}
           </div>
-
-          {needRefresh && (
-            <button
-              className="flex border-l-2 border-slate-200 justify-center items-center p-2 active:bg-slate-200 duration-150"
-              onClick={() => setDisplay(false)}
-            >
-              <IoClose />
-            </button>
-          )}
         </div>
-      </div>
+      </Alert>
     </Transition>
   );
 };

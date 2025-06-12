@@ -5,6 +5,8 @@ import { Transition } from "@headlessui/react";
 import { ProgressBar } from "$/components/ProgressBar";
 import { atom, useAtom } from "jotai";
 import { LearnMoreModal } from "./LearnMoreModal";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 const isImageMagickInCache = async () => !!(await (await caches.open("imagemagick"))?.keys())[0];
 
@@ -34,10 +36,10 @@ function useBroadcast<T = any>(channel: string) {
 
 export const GettingStarted: React.FC = () => {
   return (
-    <div className="toast p-3">
-      <p className="mb-2">Getting started...</p>
+    <Alert className="bg-card/95 backdrop-blur-sm border shadow-lg">
+      <AlertDescription className="mb-3 font-medium">Getting started...</AlertDescription>
       <ProgressBar />
-    </div>
+    </Alert>
   )
 }
 
@@ -63,38 +65,47 @@ export const Consent: React.FC = () => {
   else if (consent === "loading") return <GettingStarted />
 
   else if (consent === false) return (
-    <div className="toast p-3 space-y-1">
-      <p>ImageMagick will not be fetched.</p>
-      <p>However ImageMagick is required for this application to work.</p>
-      <p>If you change your mind, refresh the page.</p>
-    </div>
+    <Alert className="bg-card/95 backdrop-blur-sm border shadow-lg">
+      <AlertDescription className="space-y-1">
+        <p>ImageMagick will not be fetched.</p>
+        <p>However ImageMagick is required for this application to work.</p>
+        <p>If you change your mind, refresh the page.</p>
+      </AlertDescription>
+    </Alert>
   )
 
   else return (
     <>
-      <div className="toast p-3">
-        <p>Can we fetch ImageMagick (20MB)?</p>
-        <div className="grid grid-cols-3 gap-3 mt-1">
-          <button
-            onClick={() => setConsent(true)}
-            className="rounded py-1 text-white duration-150 hover:shadow-md active:bg-green-600 bg-green-500"
-          >
-            Yes
-          </button>
-          <button 
-          onClick={() => setConsent(false)}
-            className="rounded py-1 text-white duration-150 hover:shadow-md active:bg-red-600 bg-red-500"
-          >
-            No
-          </button>
-          <button
-            onClick={() => setIsLearnMoreModalOpen(true)}
-            className="rounded py-1 text-white duration-150 hover:shadow-md active:bg-blue-600 bg-blue-500"
-          >
-            Learn More
-          </button>
-        </div>
-      </div>
+      <Alert className="bg-card/95 backdrop-blur-sm border shadow-lg">
+        <AlertDescription className="space-y-3">
+          <p className="font-medium">Can we fetch ImageMagick (20MB)?</p>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              size="sm"
+              onClick={() => setConsent(true)}
+              className="bg-green-600 hover:bg-green-700 text-xs"
+            >
+              Yes
+            </Button>
+            <Button 
+              size="sm"
+              variant="destructive"
+              onClick={() => setConsent(false)}
+              className="text-xs"
+            >
+              No
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsLearnMoreModalOpen(true)}
+              className="text-xs"
+            >
+              Learn More
+            </Button>
+          </div>
+        </AlertDescription>
+      </Alert>
 
       <LearnMoreModal openState={[isLearnMoreModalOpen, setIsLearnMoreModalOpen]} />
     </>
@@ -190,33 +201,35 @@ export const Progress: React.FC = () => {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
     >
-      <div className="toast p-3">
-        <div className="flex justify-between text-base mb-2 space-x-4">
-          <p>
-            {
-              (status === "downloading" && "Fetching ImageMagick...") ||
-              (status === "fetching-from-cache" &&
-                "Fetching ImageMagick from cache") ||
-              (status === "parsing" && "Parsing") ||
-              (status === "complete" && "Finished!")}
-          </p>
-          {progressDeterminate && (
-            <p className="order-last font-bold">
+      <Alert className="bg-card/95 backdrop-blur-sm border shadow-lg">
+        <AlertDescription className="space-y-3">
+          <div className="flex justify-between items-center">
+            <p className="font-medium">
               {
-                // If decimal, show the 2 digits of decimal, else don't show
-                imagemagickProgress % 1 !== 0
-                  ? imagemagickProgress.toFixed(2)
-                  : imagemagickProgress.toFixed(0)
-              }
-              %
+                (status === "downloading" && "Fetching ImageMagick...") ||
+                (status === "fetching-from-cache" &&
+                  "Fetching ImageMagick from cache") ||
+                (status === "parsing" && "Parsing") ||
+                (status === "complete" && "Finished!")}
             </p>
-          )}
-        </div>
-        <ProgressBar
-          value={imagemagickProgress}
-          determinate={progressDeterminate}
-        />
-      </div>
+            {progressDeterminate && (
+              <p className="font-bold text-sm">
+                {
+                  // If decimal, show the 2 digits of decimal, else don't show
+                  imagemagickProgress % 1 !== 0
+                    ? imagemagickProgress.toFixed(2)
+                    : imagemagickProgress.toFixed(0)
+                }
+                %
+              </p>
+            )}
+          </div>
+          <ProgressBar
+            value={imagemagickProgress}
+            determinate={progressDeterminate}
+          />
+        </AlertDescription>
+      </Alert>
     </Transition>
   );
 };

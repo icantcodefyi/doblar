@@ -1,9 +1,9 @@
 import React, { useState, useRef } from "react";
 import classNames from "classnames";
-import styles from "./DragDropFile.module.css";
 import { IconType } from "react-icons";
-import { useButton, mergeProps } from "react-aria";
-import { DivProps } from "react-html-props";
+import { useButton } from "react-aria";
+import { Upload, FileImage } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DragDropFileProps {
   text: string;
@@ -93,16 +93,46 @@ export const DragDropFile: React.FC<DragDropFileProps> = (props) => {
       onDrop={handleDrop}
       onClick={handleOnClick}
       style={props.style}
-      className={classNames(props.className, styles.DragDropFile, {
-        [styles.fileCurrentlyHovered]: fileCurrentlyHovered,
-      })}
-    >
-      {Icon !== undefined && (
-        <span className={styles["icon-wrapper"]}>
-          <Icon size="7em" />
-        </span>
+      className={cn(
+        "w-full h-full min-h-[300px] rounded-lg border-2 border-dashed border-border bg-card/50",
+        "flex flex-col items-center justify-center p-8 text-center",
+        "transition-all duration-200 ease-in-out",
+        "hover:border-primary/50 hover:bg-accent",
+        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "active:bg-accent/80",
+        fileCurrentlyHovered && "border-primary bg-primary/10 text-primary",
+        props.className
       )}
-      <p className={styles.text}>{props.text}</p>
+    >
+      <div className="space-y-4">
+        {/* Icon */}
+        <div className={cn(
+          "mx-auto w-16 h-16 rounded-full flex items-center justify-center",
+          "bg-secondary text-secondary-foreground",
+          fileCurrentlyHovered && "bg-primary/20 text-primary"
+        )}>
+          {Icon ? (
+            <Icon size={32} />
+          ) : fileCurrentlyHovered ? (
+            <FileImage size={32} />
+          ) : (
+            <Upload size={32} />
+      )}
+        </div>
+        
+        {/* Text */}
+        <div className="space-y-2">
+          <p className={cn(
+            "text-lg font-medium",
+            fileCurrentlyHovered ? "text-primary" : "text-foreground"
+          )}>
+            {props.text}
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Supports all major image formats
+          </p>
+        </div>
+      </div>
     </button>
   );
 };

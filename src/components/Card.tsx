@@ -1,4 +1,6 @@
 import React from "react";
+import { Card as ShadcnCard, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export interface CardProps {
   title: React.ReactNode | string;
@@ -10,22 +12,27 @@ export interface CardProps {
 export const Card: React.FC<CardProps> = ({ title, icon, tag, description }) => {
   const Icon = icon;
   return (
-    <div className="flex flex-col items-center text-center rounded border-2 border-gray-300 py-6">
-      <Icon className="text-gray-700" size={80} />
-
-      {/* Title and Tag */}
-      <span className="font-bold text-xl text-gray-800 my-2">
-        <span className="flex justify-center items-center space-x-2">
-          <h3>{title}</h3>
-          {tag && 
-            <span className="uppercase bg-gray-700 text-white rounded px-2 py-1 text-xs leading-none">
-              {tag}
-            </span>
-          }
-        </span>
-      </span>
-
-      <p className="px-4 text-gray-700">{description}</p>
-    </div>
+    <ShadcnCard className="border hover:shadow-lg transition-shadow duration-200 bg-card/70 backdrop-blur-sm">
+      <CardHeader className="text-center pb-4">
+        <div className="mx-auto w-20 h-20 rounded-full bg-secondary flex items-center justify-center mb-4">
+          <Icon className="text-secondary-foreground" size={40} />
+        </div>
+        
+        <div className="space-y-2">
+          <div className="flex justify-center items-center gap-2">
+            <h3 className="text-xl font-semibold text-foreground">{title}</h3>
+            {tag && (
+              <Badge variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            )}
+          </div>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="text-center pt-0">
+        <p className="text-muted-foreground leading-relaxed">{description}</p>
+      </CardContent>
+    </ShadcnCard>
   );
 };
