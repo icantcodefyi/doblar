@@ -1,8 +1,8 @@
-# [Doblar](https://doblar.armaan.cc)
+# [Doblar](https://doblar.ani.ink)
 
 Doblar is a fully local image converter that runs in your browser. Doblar is purely client side: nothing is uploaded to a server or anything like that. All conversions take place in your browser, which means your files never leave your computer.
 
-**Try Doblar out at https://doblar.armaan.cc**
+**Try Doblar out at https://doblar.ani.ink**
 
 ## 🎥 Demo
 ![](demo.gif)
