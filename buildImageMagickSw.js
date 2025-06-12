@@ -6,7 +6,13 @@ const fs = require("fs");
 const fsPromises = fs.promises;
 
 (async() => {
-  const workerPath = await fg("./dist/assets/worker.*.js");
+  const workerPath = await fg("./dist/assets/worker-*.js");
+  
+  if (!workerPath || workerPath.length === 0) {
+    console.error("No worker files found in ./dist/assets/worker.*.js");
+    process.exit(1);
+  }
+  
   const workerStats = await fsPromises.stat(workerPath[0]);
   const workerSize = workerStats.size;
 
