@@ -166,9 +166,8 @@ export const CompressPage: React.FC = () => {
         return "WEBP";
       case "gif":
         return "GIF";
-      case "tiff":
-      case "tif":
-        return "TIFF";
+      case "heic":
+        return "HEIC";
       default:
         return "JPG";
     }
@@ -209,7 +208,7 @@ export const CompressPage: React.FC = () => {
           ? "image/webp"
           : format === "GIF"
           ? "image/gif"
-          : "image/tiff";
+          : "image/heic";
 
       return new Blob([uint8Array], { type: mimeType });
     } catch (error) {
@@ -476,7 +475,7 @@ export const CompressPage: React.FC = () => {
                           <SelectItem value="JPG">JPEG</SelectItem>
                           <SelectItem value="PNG">PNG</SelectItem>
                           <SelectItem value="GIF">GIF</SelectItem>
-                          <SelectItem value="TIFF">TIFF</SelectItem>
+                          <SelectItem value="HEIC">HEIC</SelectItem>
                         </SelectContent>
                       </Select>
                       <p className="text-xs text-muted-foreground">
@@ -669,7 +668,7 @@ export const CompressPage: React.FC = () => {
                           : "Drop images here or click to select"}
                       </h3>
                       <p className="text-sm mb-4">
-                        Supports JPEG, PNG, WebP, GIF, TIFF and other image
+                        Supports JPEG, PNG, WebP, GIF, HEIC and other image
                         formats
                       </p>
                       <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground/70">
