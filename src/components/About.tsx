@@ -72,7 +72,7 @@ export const About = () => {
                 <br />
                 <a
                   className="inline-flex items-center gap-2 text-primary hover:text-primary/80 font-medium transition-colors duration-200 hover:underline"
-                  href="https://github.com/Armster15/doblar"
+                  href="https://github.com/icantcodefyi/doblar"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
