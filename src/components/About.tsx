@@ -13,7 +13,7 @@ export const About = () => {
   const TopLevelComponent = 
     isTablet 
       ? ({ children }: {children: React.ReactNode}) => (
-          <ShadcnCard className="bg-card/80 shadow-none border-0">
+          <ShadcnCard className="bg-card/80 shadow-none border-0 pt-10">
             <CardContent className="p-8">{children}</CardContent>
           </ShadcnCard>
         )

@@ -154,7 +154,7 @@ export const Desktop = () => {
   const successfulConversions = filesToConvert.filter(file => file.status === "success").length;
 
   return (
-    <div className="h-full max-h-[450px] flex flex-col bg-card/50 backdrop-blur-sm rounded-lg">
+    <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm rounded-lg">
       {/* Bulk Actions Toolbar */}
       {filesToConvertAtoms.length > 0 && (
         <div className="flex items-center justify-between p-4 border-b bg-muted/20">

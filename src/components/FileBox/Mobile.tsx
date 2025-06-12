@@ -105,8 +105,8 @@ export const Mobile = () => {
               <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center mb-3">
                 <FileText size={20} className="text-muted-foreground" />
               </div>
-              <p className="text-foreground">No files yet</p>
-              <p className="text-muted-foreground text-sm mt-1">Upload files to get started</p>
+              <p className="text-foreground text-center">No files yet</p>
+              <p className="text-muted-foreground text-sm mt-1 text-center">Upload files to get started</p>
             </div>
           ) : (
             <ScrollArea className={`${successfulConversions > 0 ? 'h-[250px]' : 'h-[300px]'}`}>
