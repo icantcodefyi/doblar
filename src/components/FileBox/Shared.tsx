@@ -127,9 +127,9 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ fileAtom, removeFi
       {file.status === "success" && (
         <Button
           size="sm"
-          variant="default"
+          variant="success"
           asChild
-          className="h-8 w-8 p-0 bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+          className="h-8 w-8 p-0"
         >
           <a
             title="Download this file"

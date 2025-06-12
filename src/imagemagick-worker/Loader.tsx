@@ -82,8 +82,9 @@ export const Consent: React.FC = () => {
           <div className="grid grid-cols-3 gap-2">
             <Button
               size="sm"
+              variant="success"
               onClick={() => setConsent(true)}
-              className="bg-green-600 hover:bg-green-700 text-xs"
+              className="text-xs"
             >
               Yes
             </Button>
