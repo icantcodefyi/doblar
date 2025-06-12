@@ -18,7 +18,7 @@ import { imageFileTypes, type ImageFileTypes } from "$/constants";
 import { useAtom } from "jotai";
 import { useWorkerRefContext } from "$/imagemagick-worker";
 import { convertFile } from "$/utils/convertFile";
-import JSZip from "jszip";
+import { downloadAsZip } from "$/utils/downloadZip";
 
 export const Desktop = () => {
   const [filesToConvertAtoms, removeFileToConvertAtom] = useFilesToConvertAtoms();
@@ -95,55 +95,26 @@ export const Desktop = () => {
     setSelectedFileIds(new Set()); // Clear selection after bulk operation
   };
 
-  const downloadAll = () => {
-    filesToConvert.forEach(file => {
-      if (file.status === "success" && file.successData?.url) {
-        const link = document.createElement('a');
-        link.href = file.successData.url;
-        link.download = file.file.name
-          .replace(/\.[^/.]+$/, "")
-          .concat(".", file.convertTo as string);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    });
-  };
-
-  const downloadAsZip = async () => {
+  const downloadAsZipHandler = async () => {
     setIsCreatingZip(true);
     
     try {
-      const zip = new JSZip();
       const successfulFiles = filesToConvert.filter(file => file.status === "success");
       
       if (successfulFiles.length === 0) {
         return;
       }
 
-      // Add each file to the zip
-      for (const file of successfulFiles) {
-        if (file.successData?.data) {
-          const fileName = file.file.name
+      const downloadableFiles = successfulFiles
+        .filter(file => file.successData?.data)
+        .map(file => ({
+          data: file.successData!.data,
+          filename: file.file.name
             .replace(/\.[^/.]+$/, "")
-            .concat(".", file.convertTo as string);
-          zip.file(fileName, file.successData.data);
-        }
-      }
+            .concat(".", file.convertTo as string)
+        }));
 
-      // Generate the zip file
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-      
-      // Create download link
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(zipBlob);
-      link.download = `converted-files-${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up the blob URL
-      URL.revokeObjectURL(link.href);
+      await downloadAsZip(downloadableFiles, `converted-files-${new Date().toISOString().split('T')[0]}.zip`);
     } catch (error) {
       console.error("Failed to create zip file:", error);
     } finally {
@@ -178,17 +149,7 @@ export const Desktop = () => {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={downloadAsZip}
-                  disabled={isCreatingZip}
-                  className="h-8 text-xs"
-                >
-                  <Archive size={14} className="mr-1" />
-                  {isCreatingZip ? "Creating ZIP..." : `Download ZIP (${successfulConversions})`}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={downloadAll}
+                  onClick={downloadAsZipHandler}
                   className="h-8 text-xs"
                 >
                   <Download size={14} className="mr-1" />

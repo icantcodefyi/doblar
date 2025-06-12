@@ -6,67 +6,38 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { FileText, Archive, Download } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import JSZip from "jszip";
+import { downloadAsZip } from "$/utils/downloadZip";
 
 export const Mobile = () => {
   const [filesToConvertAtoms, removeFileToConvertAtom] = useFilesToConvertAtoms();
   const [filesToConvert] = useFilesToConvert();
   const [isCreatingZip, setIsCreatingZip] = useState(false);
 
-  const downloadAsZip = async () => {
+  const downloadAsZipHandler = async () => {
     setIsCreatingZip(true);
     
     try {
-      const zip = new JSZip();
       const successfulFiles = filesToConvert.filter(file => file.status === "success");
       
       if (successfulFiles.length === 0) {
         return;
       }
 
-      // Add each file to the zip
-      for (const file of successfulFiles) {
-        if (file.successData?.data) {
-          const fileName = file.file.name
+      const downloadableFiles = successfulFiles
+        .filter(file => file.successData?.data)
+        .map(file => ({
+          data: file.successData!.data,
+          filename: file.file.name
             .replace(/\.[^/.]+$/, "")
-            .concat(".", file.convertTo as string);
-          zip.file(fileName, file.successData.data);
-        }
-      }
+            .concat(".", file.convertTo as string)
+        }));
 
-      // Generate the zip file
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-      
-      // Create download link
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(zipBlob);
-      link.download = `converted-files-${new Date().toISOString().split('T')[0]}.zip`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      // Clean up the blob URL
-      URL.revokeObjectURL(link.href);
+      await downloadAsZip(downloadableFiles, `converted-files-${new Date().toISOString().split('T')[0]}.zip`);
     } catch (error) {
       console.error("Failed to create zip file:", error);
     } finally {
       setIsCreatingZip(false);
     }
-  };
-
-  const downloadAll = () => {
-    filesToConvert.forEach(file => {
-      if (file.status === "success" && file.successData?.url) {
-        const link = document.createElement('a');
-        link.href = file.successData.url;
-        link.download = file.file.name
-          .replace(/\.[^/.]+$/, "")
-          .concat(".", file.convertTo as string);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-    });
   };
 
   const successfulConversions = filesToConvert.filter(file => file.status === "success").length;
@@ -81,17 +52,7 @@ export const Mobile = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={downloadAsZip}
-                disabled={isCreatingZip}
-                className="flex-1 text-xs"
-              >
-                <Archive size={14} className="mr-1" />
-                {isCreatingZip ? "Creating ZIP..." : `ZIP (${successfulConversions})`}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={downloadAll}
+                onClick={downloadAsZipHandler}
                 className="flex-1 text-xs"
               >
                 <Download size={14} className="mr-1" />
